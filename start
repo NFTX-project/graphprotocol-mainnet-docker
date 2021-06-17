@@ -1,17 +1,22 @@
-EMAIL=email@domain.com \
-INDEX_HOST=index.sld.tld \
-GRAFANA_HOST=grafana.sld.tld \
-ADMIN_USER=your_user \
-ADMIN_PASSWORD=your_password \
-DB_USER=your_db_user \
-DB_PASS=your_db_password \
-AGENT_DB_NAME=your_agent_db_name \
-GRAPH_NODE_DB_NAME=your_graphnode_db_name \
-ETHEREUM_RPC_0="http://ip:port" \
-ETHEREUM_RPC_1="http://ip:port" \
-TXN_RPC="http://ip:port" \
-OPERATOR_SEED_PHRASE="12 or 15 word mnemonic" \
-STAKING_WALLET_ADDRESS=0xAdDreSs \
-GEO_COORDINATES="69.420 69.420" \
-QUERY_FEE_REBATE_CLAIM_THRESHOLD=0 \
+EMAIL=baboialex95@gmail.com \
+INDEX_HOST=index.stakesquid-beeg.gq \
+GRAFANA_HOST=grafana.stakesquid-beeg.gq \
+ADMIN_USER=NachoFuckingBusiness \
+ADMIN_PASSWORD=KGFwFbKHqCYyBA6pzNzAvxDhWADHUzaG2d9FxaT8Q6LTwCpLBZXgnQ9N859RLjPE \
+DB_USER=MyPostgresUser420LFG \
+DB_PASS=MyPostgresPassword420LFG \
+AGENT_DB_NAME=agent-db \
+ETHEREUM_RPC_0="http://oe-lb-ext.easy2stake.com" \
+ETHEREUM_RPC_1="http://oe-lb-ext.easy2stake.com" \
+TXN_RPC="http://oe-lb-ext.easy2stake.com" \
+OPERATOR_SEED_PHRASE="cram empower salmon rebuild actress raw absurd account sibling solution brick prefer ivory focus melody" \
+STAKING_WALLET_ADDRESS=0xa3276E7ab0a162F6A3b5aA6B3089aCcBAA65d12e \
+GEO_COORDINATES="60.179 24.934" \
+QUERY_FEE_REBATE_CLAIM_THRESHOLD=1000 \
+GRAPHNODE_LOGLEVEL=warn \
 docker-compose up -d --remove-orphans --build $@
+
+#ETHEREUM_RPC_1="http://$(ifconfig docker0 | awk '$1 == "inet" {print $2}'):9656" \
+#GRAPH_NODE_DB_NAME=graphnode-db \
+#ETHEREUM_RPC_1="http://tg-lb-ext.easy2stake.com" \
+#DB_HOST=$(ifconfig docker0 | awk '$1 == "inet" {print $2}') \

@@ -41,6 +41,25 @@ services:
       - ./cli/scripts:/home/graph/scripts
 
 
+######################################################################################
+#####################            POI API                       #######################
+######################################################################################
+
+
+  poi-api:
+    container_name: poi-api
+    build:
+      context: ./poi-api
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://${DB_USER:-graph-node}:${DB_PASS:-db-password}@${DB_HOST:-postgres}:5432/${GRAPH_NODE_DB_NAME:-graph-node}
+      NODE_ENV: development
+      PORT: 4000
+    ports:
+      - "4000:4000"
+
+
 
 ######################################################################################
 #####################            VECTOR NODE                   #######################
