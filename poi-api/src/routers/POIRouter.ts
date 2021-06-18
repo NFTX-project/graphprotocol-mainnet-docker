@@ -4,7 +4,7 @@ import POIController from '../controllers/POIController';
 const router = Router();
 const poiController = new POIController();
 
-router.get('/poi', poiController.list);
-router.get('/poi/:subgraph/:block', poiController.get);
+router.get('/', poiController.list);
+router.post('/', poiController.compare);
 
 export default router;

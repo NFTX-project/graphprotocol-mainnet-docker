@@ -26,7 +26,7 @@ class Server {
     }
 
     private routerConfig() {
-        this.app.use('/', poiRouter);
+        this.app.use('/poi', poiRouter);
     }
 
     public start = (port: number) => {
