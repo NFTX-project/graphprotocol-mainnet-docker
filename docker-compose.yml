@@ -101,7 +101,7 @@ services:
       - index-node-1
       - query-node-0
       - indexer-agent
-      #- vector-node              
+      #- vector-node
     environment:
       INDEXER_SERVICE_MNEMONIC: ${OPERATOR_SEED_PHRASE}
       INDEXER_SERVICE_INDEXER_ADDRESS: ${STAKING_WALLET_ADDRESS}
@@ -117,8 +117,8 @@ services:
       INDEXER_SERVICE_POSTGRES_DATABASE: ${AGENT_DB_NAME:-indexer-agent}
       INDEXER_SERVICE_WALLET_WORKER_THREADS: ${WORKER_THREADS_PER_INDEXER_SERVICE:-8}
       #INDEXER_SERVICE_VECTOR_NODE: "http://vector-node:8000"
-      #INDEXER_SERVICE_VECTOR_ROUTER: "vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7"                                                             
-      INDEXER_SERVICE_CLIENT_SIGNER_ADDRESS: "0x982D10c56b8BBbD6e09048F5c5f01b43C65D5aE0"                                                                                          
+      #INDEXER_SERVICE_VECTOR_ROUTER: "vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7"
+      INDEXER_SERVICE_CLIENT_SIGNER_ADDRESS: "0x982D10c56b8BBbD6e09048F5c5f01b43C65D5aE0"
       SKIP_EVM_VALIDATION: "true"
       SERVER_HOST: ${AGENT_DB_HOST:-postgres2}
       SERVER_PORT: 5432
@@ -151,9 +151,9 @@ services:
       #- vector-node
     expose:
       - 7300
-      - 8000      
+      - 8000
       - 8001
-      - 8002            
+      - 8002
     environment:
       INDEXER_AGENT_MNEMONIC: ${OPERATOR_SEED_PHRASE}
       INDEXER_AGENT_INDEXER_ADDRESS: ${STAKING_WALLET_ADDRESS}
@@ -168,7 +168,7 @@ services:
       INDEXER_AGENT_PUBLIC_INDEXER_URL: 'https://${INDEX_HOST}/'
       INDEXER_AGENT_INDEXER_GEO_COORDINATES: ${GEO_COORDINATES:-60.16952 24.93545}
       INDEXER_AGENT_NETWORK_SUBGRAPH_ENDPOINT: ${INDEXER_AGENT_NETWORK_SUBGRAPH_ENDPOINT:-https://gateway.thegraph.com/network}
-      INDEXER_AGENT_NETWORK_SUBGRAPH_DEPLOYMENT: ${INDEXER_AGENT_NETWORK_SUBGRAPH_DEPLOYMENT}                                                                                       
+      INDEXER_AGENT_NETWORK_SUBGRAPH_DEPLOYMENT: ${INDEXER_AGENT_NETWORK_SUBGRAPH_DEPLOYMENT}
       INDEXER_AGENT_POSTGRES_HOST: ${AGENT_DB_HOST:-postgres2}
       INDEXER_AGENT_POSTGRES_USERNAME: ${DB_USER:-graph-node}
       INDEXER_AGENT_POSTGRES_PASSWORD: ${DB_PASS:-db-password}
@@ -179,7 +179,8 @@ services:
       #INDEXER_AGENT_VECTOR_EVENT_SERVER_PORT: 8001
       #INDEXER_AGENT_VECTOR_ROUTER: "vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7"
       INDEXER_AGENT_COLLECT_RECEIPTS_ENDPOINT: https://gateway.network.thegraph.com/collect-receipts
-      INDEXER_AGENT_OFFCHAIN_SUBGRAPHS: "QmT2Y7SHXGRt7EKXzFPYMjnrgX64PQr86EjbsHoDLNzwLy,QmY68uGbdgD9gkhvEQrAMp3DDj3ojrKhe23fTmXpRkqgmm,QmSqNTuVwKTYLXdBVULroCKh3pUNNBVUmcu8tXJAXXdeUr,Qme66ZNMxSdCQKzaDuvS381whCVYCQjf637sGZCqJHAWHB,QmTBjLFUyifcZKuy1UqJM1GM5Lp6Ne8cZL7zmSnZK6uPkE,QmRhh7rFt3qxfRMTZvHRNK6jCobX4Gx5TkzWXhZkuj57w8,QmTBxvMF6YnbT1eYeRx9XQpH4WvxTV53vdptCCZFiZSprg,QmZdsSbRwVD7VVVm5WGxZZC6HYvbjnFb4hcwvQ4fTs5bxA,QmRhYzT8HEZ9LziQhP6JfNfd4co9A7muUYQhPMJsMUojSF,QmbHg6vAJRD9ZWz5GTP9oMrfDyetnGTr5KWJBYAq59fm1W,Qmf3qbX2SF58ifUQfMvWJKe99g9DavSKtRxm3evvCHocwS,QmRDGLp6BHwiH9HAE2NYEE3f7LrKuRqziHBv76trT4etgU,QmUghXvKf5cVjtayNNRHCd3RbHEwfbGBQ95s9vheJjN5hH,QmTKXLEdMD6Vq7Nwxo8XAfnHpG6H1TzL1AGwiqLpoae3Pb,Qmaz1R8vcv9v3gUfksqiS9JUz7K9G8S5By3JYn8kTiiP5K,QmNRkaVUwUQAwPwWgdQHYvw53A5gh3CP3giWnWQZdA2BTE,QmVUGoP6yjUxf5NnXtKxVQuuNh2dAxepuRiUuCQHQ9a3jy"
+      INDEXER_AGENT_OFFCHAIN_SUBGRAPHS: ${OFFCHAIN_SUBGRAPHS}
+
     networks:
       - monitor-net
     restart: unless-stopped
@@ -192,15 +193,18 @@ services:
 
 
   index-node-0:
-    image: graphprotocol/graph-node:v0.22.0
+    image: graphprotocol/graph-node:v0.23.1
     container_name: index-node-0
+    volumes:
+      - ./graph-node-configs:/root/graph-node-configs/
+      - ./postgres-socket:/var/run/postgresql
     environment:
+      GRAPH_NODE_CONFIG: /root/graph-node-configs/index_node_0_config.toml
       postgres_host: ${DB_HOST:-postgres}
       postgres_user: ${DB_USER:-graph-node}
       postgres_pass: ${DB_PASS:-db-password}
       postgres_db: ${GRAPH_NODE_DB_NAME:-graph-node}
       ipfs: '${IPFS_ENDPOINT:-https://ipfs.network.thegraph.com}'
-      ethereum: 'mainnet:${ETHEREUM_RPC_0}'
       node_role: index-node
       node_id: index_node_0
       BLOCK_INGESTOR: index_node_0
@@ -233,15 +237,18 @@ services:
 
 
   index-node-1:
-    image: graphprotocol/graph-node:v0.22.0
+    image: graphprotocol/graph-node:v0.23.1
     container_name: index-node-1
+    volumes:
+      - ./graph-node-configs:/root/graph-node-configs/
+      - ./postgres-socket:/var/run/postgresql
     environment:
+      GRAPH_NODE_CONFIG: /root/graph-node-configs/index_node_1_config.toml
       postgres_host: ${DB_HOST:-postgres}
       postgres_user: ${DB_USER:-graph-node}
       postgres_pass: ${DB_PASS:-db-password}
       postgres_db: ${GRAPH_NODE_DB_NAME:-graph-node}
       ipfs: '${IPFS_ENDPOINT:-https://ipfs.network.thegraph.com}'
-      ethereum: 'mainnet:${ETHEREUM_RPC_1}'
       node_role: index-node
       node_id: index_node_1
       BLOCK_INGESTOR: index_node_0
@@ -273,15 +280,18 @@ services:
 
 
   query-node-0:
-    image: graphprotocol/graph-node:v0.22.0
+    image: graphprotocol/graph-node:v0.23.1
     container_name: query-node-0
+    volumes:
+      - ./graph-node-configs:/root/graph-node-configs/
+      - ./postgres-socket:/var/run/postgresql
     environment:
+      GRAPH_NODE_CONFIG: /root/graph-node-configs/query_node_0_config.toml
       postgres_host: ${DB_HOST:-postgres}
       postgres_user: ${DB_USER:-graph-node}
       postgres_pass: ${DB_PASS:-db-password}
       postgres_db: ${GRAPH_NODE_DB_NAME:-graph-node}
       ipfs: '${IPFS_ENDPOINT:-https://ipfs.network.thegraph.com}'
-      ethereum: 'mainnet:${ETHEREUM_RPC_0}'
       node_role: query-node
       node_id: query_node_0
       RUST_LOG: INFO
@@ -355,13 +365,18 @@ services:
 #####################            POSTGRES CONTAINER            #######################
 ######################################################################################
 
-
+####
+## for this to work at highest speed activate 1GB size hugepages and mount 16GB of those to /dev/hugepages
+## postgres will start regardless but has decreased performance
+## 16 GB is the size of the shared buffers argument. huge pages should be large enough to contain those shared buffers.
+## if you have more than 128 GB RAM or do not run the ethereum node on localhost your mileage may vary.
+###
 
   postgres:
     image: postgres:13.3
     shm_size: 32g
     container_name: postgres
-    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements", "-cshared_buffers=16384MB", "-cwork_mem=64MB", "-cmaintenance_work_mem=620MB", "-chuge_pages=on", "-ceffective_cache_size=45GB", "-crandom_page_cost=1.25", "-cmax_worker_processes=64", "-cmax_parallel_workers_per_gather=32", "-cmax_parallel_maintenance_workers=32", "-cmax_parallel_workers=64", "-cparallel_leader_participation=on", "-ccheckpoint_timeout=15min", "-ccheckpoint_completion_target=0.9", "-cmax_wal_size=10240MB", "-cmin_wal_size=5120MB", "-cwal_buffers=-1", "-cjit=on", "-cenable_partitionwise_join=on", "-cenable_partitionwise_aggregate=on", "-cmax_connections=100", "-ceffective_io_concurrency=100"]
+    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements", "-cshared_buffers=16384MB", "-cwork_mem=64MB", "-cmaintenance_work_mem=620MB", "-chuge_pages=try", "-ceffective_cache_size=45GB", "-crandom_page_cost=1.25", "-cmax_worker_processes=64", "-cmax_parallel_workers_per_gather=32", "-cmax_parallel_maintenance_workers=32", "-cmax_parallel_workers=64", "-cparallel_leader_participation=on", "-ccheckpoint_timeout=15min", "-ccheckpoint_completion_target=0.9", "-cmax_wal_size=10240MB", "-cmin_wal_size=5120MB", "-cwal_buffers=-1", "-cjit=on", "-cenable_partitionwise_join=on", "-cenable_partitionwise_aggregate=on", "-cmax_connections=100", "-ceffective_io_concurrency=100"]
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-graph-node}
@@ -370,6 +385,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - /dev/hugepages:/dev/hugepages
+      - ./postgres-socket:/var/run/postgresql
     networks:
       - monitor-net
     expose:
@@ -406,7 +422,6 @@ services:
 ######################################################################################
 #####################          PROMETHEUS CONTAINER            #######################
 ######################################################################################
-
 
 
   prometheus:
@@ -538,7 +553,7 @@ services:
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=${GRAFANA_HOST}
       - GF_INSTALL_PLUGINS=fifemon-graphql-datasource
-      - subgraph_endpoint=${SUBGRAPH_ENDPOINT:-https://gateway.network.thegraph.com/network}
+      - subgraph_endpoint=${SUBGRAPH_ENDPOINT:-https://gateway.thegraph.com/network}
     restart: unless-stopped
     expose:
       - 3000
@@ -597,6 +612,3 @@ services:
 #    labels:
 #      org.label-schema.group: "monitoring"
 #    logging: *default-logging
-
-
-

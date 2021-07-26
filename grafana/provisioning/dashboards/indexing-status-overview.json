@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1623471486022,
+  "id": 7,
+  "iteration": 1624738051642,
   "links": [],
   "panels": [
     {
@@ -195,7 +195,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "-- grafana ignore\nselect\n  g.name || (case\n        when g.pending_version = v.id then ' (P)'\n        when g.current_version = v.id then ' (C)'\n        else ' (U)' end) as subgraph_name,\n  d.id as deployment,\n  s.id as schema,\n  replace(a.node_id, '','') as nodeId,\n  d.synced::text,\n  n.name as network,\n  (n.head_block_number - d.latest_ethereum_block_number) as blocks_behind_network,\n  (case when n.name = 'mainnet' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\n        when n.name = 'rinkeby' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\n        when n.name = 'kovan' then ((n.head_block_number - d.latest_ethereum_block_number)/15)::text\n        when n.name = 'poa-core' then ((n.head_block_number - d.latest_ethereum_block_number)/12)::text\n        else 'ø' end) as lag\nfrom subgraphs.subgraph_deployment as d,\n     subgraphs.subgraph_deployment_assignment as a,\n     subgraphs.subgraph_version as v,\n     subgraphs.subgraph as g,\n     subgraphs.ethereum_contract_data_source as ds,\n     subgraphs.subgraph_manifest m,\n     ethereum_networks  as n,\n     deployment_schemas as s\nwhere g.id = v.subgraph\n  and v.id in (g.pending_version, g.current_version)\n  and a.id = d.id\n  and m.id = d.manifest \n  and ds.id = m.data_sources[1]\n  and s.subgraph = d.id\n  and v.deployment = d.id\n  and not d.failed\n  and n.name = ds.network\n  and not a.node_id = 'removed'\norder by blocks_behind_network desc, subgraph_name;",
+          "rawSql": "-- grafana ignore\r\nselect\r\n  g.name || (case\r\n        when g.pending_version = v.id then ' (P)'\r\n        when g.current_version = v.id then ' (C)'\r\n        else ' (U)' end) as subgraph_name,\r\n  d.deployment,\r\n  s.id as schema,\r\n  replace(a.node_id, '','') as nodeId,\r\n  d.synced::text,\r\n  n.name as network,\r\n  (n.head_block_number - d.latest_ethereum_block_number) as blocks_behind_network,\r\n  (case when n.name = 'mainnet' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\r\n        when n.name = 'rinkeby' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\r\n        when n.name = 'kovan' then ((n.head_block_number - d.latest_ethereum_block_number)/15)::text\r\n        when n.name = 'poa-core' then ((n.head_block_number - d.latest_ethereum_block_number)/12)::text\r\n        when n.name = 'ropsten' then ((n.head_block_number - d.latest_ethereum_block_number)/2)::text\r\n        else 'ø' end) as lag\r\nfrom subgraphs.subgraph_deployment as d,\r\n     subgraphs.subgraph_deployment_assignment as a,\r\n     subgraphs.subgraph_version as v,\r\n     subgraphs.subgraph as g,\r\n     ethereum_networks  as n,\r\n     deployment_schemas as s\r\nwhere g.id = v.subgraph\r\n  and v.id in (g.pending_version, g.current_version)\r\n  and a.id = s.id\r\n  and s.id = d.id\r\n  and v.deployment = d.deployment\r\n  and not d.failed\r\n  and n.name = s.network\r\n  and not a.node_id = 'removed'\r\norder by blocks_behind_network desc, subgraph_name;",
           "refId": "A",
           "select": [
             [
@@ -229,7 +229,7 @@
       "datasource": "postgres",
       "fontSize": "100%",
       "gridPos": {
-        "h": 5,
+        "h": 8,
         "w": 24,
         "x": 0,
         "y": 13
@@ -397,7 +397,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "-- grafana ignore\nselect\n  g.name || (case\n        when g.pending_version = v.id then ' (P)'\n        when g.current_version = v.id then ' (C)'\n        else ' (U)' end) as subgraph_name,\n  d.id as deployment,\n  s.id as schema,\n  replace(a.node_id,'','') as nodeid,\n  d.synced::text,\n  n.name as network,\n  (n.head_block_number - d.latest_ethereum_block_number) as blocks_behind_network,\n  (case when n.name = 'mainnet' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\n        when n.name = 'rinkeby' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\n        when n.name = 'kovan' then ((n.head_block_number - d.latest_ethereum_block_number)/15)::text\n        when n.name = 'poa-core' then ((n.head_block_number - d.latest_ethereum_block_number)/12)::text\n        else 'ø' end) as lag\nfrom subgraphs.subgraph_deployment as d,\n     subgraphs.subgraph_deployment_assignment as a,\n     subgraphs.subgraph_version as v,\n     subgraphs.subgraph as g,\n     subgraphs.ethereum_contract_data_source as ds,\n     subgraphs.subgraph_manifest m,\n     ethereum_networks  as n,\n     deployment_schemas as s\nwhere g.id = v.subgraph\n  and v.id in (g.pending_version, g.current_version)\n  and a.id = d.id\n  and m.id = d.manifest \n  and ds.id = m.data_sources[1]\n  and s.subgraph = d.id\n  and v.deployment = d.id\n  and not d.failed\n  and n.name = ds.network\n  and a.node_id not like 'index_node_%'\norder by blocks_behind_network desc, subgraph_name;",
+          "rawSql": "-- grafana ignore\r\nselect\r\n  g.name || (case\r\n        when g.pending_version = v.id then ' (P)'\r\n        when g.current_version = v.id then ' (C)'\r\n        else ' (U)' end) as subgraph_name,\r\n  d.deployment,\r\n  s.id as schema,\r\n  replace(a.node_id,'','') as nodeid,\r\n  d.synced::text,\r\n  n.name as network,\r\n  (n.head_block_number - d.latest_ethereum_block_number) as blocks_behind_network,\r\n  (case when n.name = 'mainnet' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\r\n        when n.name = 'rinkeby' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\r\n        when n.name = 'kovan' then ((n.head_block_number - d.latest_ethereum_block_number)/15)::text\r\n        when n.name = 'poa-core' then ((n.head_block_number - d.latest_ethereum_block_number)/12)::text\r\n\t\twhen n.name = 'ropsten' then ((n.head_block_number - d.latest_ethereum_block_number)/2)::text\r\n        else 'ø' end) as lag\r\nfrom subgraphs.subgraph_deployment as d,\r\n     subgraphs.subgraph_deployment_assignment as a,\r\n     subgraphs.subgraph_version as v,\r\n     subgraphs.subgraph as g,\r\n     ethereum_networks  as n,\r\n     deployment_schemas as s\r\nwhere g.id = v.subgraph\r\n  and v.id in (g.pending_version, g.current_version)\r\n  and a.id = s.id\r\n  and s.id = d.id\r\n  and v.deployment = d.deployment\r\n  and not d.failed\r\n  and n.name = s.network\r\n  and a.node_id not like 'index_node_%'\r\norder by blocks_behind_network desc, subgraph_name;",
           "refId": "A",
           "select": [
             [
@@ -524,11 +524,18 @@
             "properties": [
               {
                 "id": "custom.displayMode",
-                "value": "json-view"
+                "value": "color-text"
               },
               {
                 "id": "displayName",
                 "value": "Error Message"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
               }
             ]
           },
@@ -580,7 +587,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 223
+                "value": 287
               }
             ]
           },
@@ -592,7 +599,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 185
+                "value": 257
               }
             ]
           },
@@ -619,14 +626,26 @@
                 "value": 402
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Deterministic"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 127
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 11,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 21
       },
       "id": 36,
       "options": {
@@ -769,7 +788,7 @@
               },
               {
                 "id": "unit",
-                "value": "string"
+                "value": "none"
               },
               {
                 "id": "custom.displayMode",
@@ -780,15 +799,15 @@
                 "value": [
                   {
                     "options": {
+                      "failed": {
+                        "color": "dark-red",
+                        "index": 1,
+                        "text": "FAILED"
+                      },
                       "healthy": {
                         "color": "dark-green",
                         "index": 0,
-                        "text": "-"
-                      },
-                      "unhealthy": {
-                        "color": "dark-red",
-                        "index": 1,
-                        "text": "unhealthy"
+                        "text": "healthy"
                       }
                     },
                     "type": "value"
@@ -816,22 +835,22 @@
                 "value": [
                   {
                     "options": {
-                      "match": "true",
+                      "match": "false",
                       "result": {
-                        "color": "dark-red",
+                        "color": "dark-green",
                         "index": 0,
-                        "text": "FAILED"
+                        "text": "-"
                       }
                     },
                     "type": "special"
                   },
                   {
                     "options": {
-                      "match": "false",
+                      "match": "true",
                       "result": {
-                        "color": "dark-green",
+                        "color": "dark-red",
                         "index": 1,
-                        "text": "-"
+                        "text": "FAILED"
                       }
                     },
                     "type": "special"
@@ -1006,7 +1025,7 @@
         ]
       },
       "gridPos": {
-        "h": 14,
+        "h": 7,
         "w": 24,
         "x": 0,
         "y": 29
@@ -1028,7 +1047,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n\tds.name as deployment_schema,\r\n\tsg.name as deployment_name,\r\n\tsd.vid as num,\r\n\tsd.id as deployment_id,\r\n\tsubstring(sm.repository,20,31) as git_repo,\r\n\tsda.node_id as node_id,\r\n\tsd.health as sub_health,\r\n\tsd.failed as sub_failed,\r\n\tsd.synced as sub_sync,\r\n\tsd.latest_ethereum_block_number as last_block,\r\n\tsd.entity_count as sub_entity,\r\n\tsize.total_bytes as size_total, \r\n\tsize.total_bytes as size_total_bytes, \r\n\tsd.earliest_ethereum_block_number as start_block, \r\n\tencode(sd.earliest_ethereum_block_hash, 'hex') as start_hash, \r\n\tencode(sd.latest_ethereum_block_hash, 'hex') as last_hash,\r\n\tsd.reorg_count as reorg_count, \r\n\tsd.current_reorg_depth as curr_reorg_count, \r\n\tsd.max_reorg_depth as max_reorg\r\nFROM \r\n\tsubgraphs.\"subgraph_deployment\" as sd\r\n\r\nleft join subgraphs.\"subgraph_manifest\" as sm on (sm.vid = sd.vid)\r\nleft join subgraphs.\"subgraph_deployment_assignment\" as sda on (sda.vid = sd.vid)\r\nleft join subgraphs.\"subgraph_version\" as sv on (sv.vid = sd.vid)\r\nleft join subgraphs.\"subgraph\" as sg on (sg.vid = sd.vid)\r\nleft join public.\"deployment_schemas\" as ds on (ds.subgraph = sd.id)\r\n\r\nleft join (\r\n\tSELECT *, total_bytes-index_bytes-coalesce(toast_bytes,0) AS table_bytes FROM (\r\n\t\tSELECT nspname AS table_schema\r\n            , ds.subgraph\r\n            , sum(pg_total_relation_size(c.oid)) AS total_bytes\r\n            , sum(pg_indexes_size(c.oid)) AS index_bytes\r\n            , sum(pg_total_relation_size(reltoastrelid)) AS toast_bytes\r\n\t\tFROM pg_class c\r\n\t\tLEFT JOIN pg_namespace n ON n.oid = c.relnamespace\r\n\t\t\tINNER JOIN deployment_schemas ds ON ds.name = n.nspname\r\n\t\tWHERE relkind = 'r'\r\n\t\t\tGROUP BY ds.subgraph,table_schema\r\n  ) a\r\n) as size on (sd.id = size.subgraph) order by sd.vid",
+          "rawSql": "SELECT \r\n\tds.name as deployment_schema,\r\n\tsg.name as deployment_name,\r\n\tsd.id as deployment_id,\r\n\tsubstring(sm.repository,20,31) as git_repo,\r\n\tsda.node_id as node_id,\r\n\tsd.health as sub_health,\r\n\tsd.failed as sub_failed,\r\n\tsd.synced as sub_sync,\r\n\tsd.latest_ethereum_block_number as last_block,\r\n\tsd.entity_count as sub_entity,\r\n\tsize.total_bytes as size_total, \r\n\tsize.total_bytes as size_total_bytes, \r\n\tsd.earliest_ethereum_block_number as start_block, \r\n\tencode(sd.earliest_ethereum_block_hash, 'hex') as start_hash, \r\n\tencode(sd.latest_ethereum_block_hash, 'hex') as last_hash,\r\n\tsd.reorg_count as reorg_count, \r\n\tsd.current_reorg_depth as curr_reorg_count, \r\n\tsd.max_reorg_depth as max_reorg\r\nFROM subgraphs.\"subgraph_deployment\" as sd\r\nleft join subgraphs.\"subgraph_manifest\" as sm on (sm.id = sd.id)\r\nleft join subgraphs.\"subgraph_deployment_assignment\" as sda on (sda.id = sd.id)\r\nleft join subgraphs.\"subgraph_version\" as sv on (sv.deployment = sd.deployment)\r\nleft join subgraphs.\"subgraph\" as sg on (sv.id in (sg.current_version, sg.pending_version))\r\nleft join public.\"deployment_schemas\" as ds on (ds.subgraph = sd.deployment)\r\nleft join (\r\n\tSELECT *, total_bytes-index_bytes-coalesce(toast_bytes,0) AS table_bytes FROM (\r\n\t\tSELECT nspname AS table_schema\r\n            , ds.subgraph\r\n            , sum(pg_total_relation_size(c.oid)) AS total_bytes\r\n            , sum(pg_indexes_size(c.oid)) AS index_bytes\r\n            , sum(pg_total_relation_size(reltoastrelid)) AS toast_bytes\r\n\t\tFROM pg_class c\r\n\t\tLEFT JOIN pg_namespace n ON n.oid = c.relnamespace\r\n\t\t\tINNER JOIN deployment_schemas ds ON ds.name = n.nspname\r\n\t\tWHERE relkind = 'r'\r\n\t\t\tGROUP BY ds.subgraph,table_schema\r\n  ) a\r\n) as size on (sd.deployment = size.subgraph) order by sd.id",
           "refId": "A",
           "select": [
             [
@@ -1090,7 +1109,7 @@
         "h": 4,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 36
       },
       "id": 6,
       "links": [],
@@ -1198,7 +1217,7 @@
         "h": 4,
         "w": 12,
         "x": 12,
-        "y": 43
+        "y": 36
       },
       "id": 38,
       "links": [],
@@ -1348,5 +1367,5 @@
   "timezone": "",
   "title": "Indexing Status Overview",
   "uid": "indexing-status-overview",
-  "version": 4
+  "version": 9
 }
