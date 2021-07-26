@@ -179,7 +179,7 @@ services:
       #INDEXER_AGENT_VECTOR_EVENT_SERVER_PORT: 8001
       #INDEXER_AGENT_VECTOR_ROUTER: "vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7"
       INDEXER_AGENT_COLLECT_RECEIPTS_ENDPOINT: https://gateway.network.thegraph.com/collect-receipts
-      INDEXER_AGENT_OFFCHAIN_SUBGRAPHS: "QmTBxvMF6YnbT1eYeRx9XQpH4WvxTV53vdptCCZFiZSprg,QmZdsSbRwVD7VVVm5WGxZZC6HYvbjnFb4hcwvQ4fTs5bxA,QmRhYzT8HEZ9LziQhP6JfNfd4co9A7muUYQhPMJsMUojSF,QmbHg6vAJRD9ZWz5GTP9oMrfDyetnGTr5KWJBYAq59fm1W,Qmf3qbX2SF58ifUQfMvWJKe99g9DavSKtRxm3evvCHocwS,QmRDGLp6BHwiH9HAE2NYEE3f7LrKuRqziHBv76trT4etgU,QmUghXvKf5cVjtayNNRHCd3RbHEwfbGBQ95s9vheJjN5hH,QmTKXLEdMD6Vq7Nwxo8XAfnHpG6H1TzL1AGwiqLpoae3Pb,Qmaz1R8vcv9v3gUfksqiS9JUz7K9G8S5By3JYn8kTiiP5K,QmNRkaVUwUQAwPwWgdQHYvw53A5gh3CP3giWnWQZdA2BTE"
+      INDEXER_AGENT_OFFCHAIN_SUBGRAPHS: "QmT2Y7SHXGRt7EKXzFPYMjnrgX64PQr86EjbsHoDLNzwLy,QmY68uGbdgD9gkhvEQrAMp3DDj3ojrKhe23fTmXpRkqgmm,QmSqNTuVwKTYLXdBVULroCKh3pUNNBVUmcu8tXJAXXdeUr,Qme66ZNMxSdCQKzaDuvS381whCVYCQjf637sGZCqJHAWHB,QmTBjLFUyifcZKuy1UqJM1GM5Lp6Ne8cZL7zmSnZK6uPkE,QmRhh7rFt3qxfRMTZvHRNK6jCobX4Gx5TkzWXhZkuj57w8,QmTBxvMF6YnbT1eYeRx9XQpH4WvxTV53vdptCCZFiZSprg,QmZdsSbRwVD7VVVm5WGxZZC6HYvbjnFb4hcwvQ4fTs5bxA,QmRhYzT8HEZ9LziQhP6JfNfd4co9A7muUYQhPMJsMUojSF,QmbHg6vAJRD9ZWz5GTP9oMrfDyetnGTr5KWJBYAq59fm1W,Qmf3qbX2SF58ifUQfMvWJKe99g9DavSKtRxm3evvCHocwS,QmRDGLp6BHwiH9HAE2NYEE3f7LrKuRqziHBv76trT4etgU,QmUghXvKf5cVjtayNNRHCd3RbHEwfbGBQ95s9vheJjN5hH,QmTKXLEdMD6Vq7Nwxo8XAfnHpG6H1TzL1AGwiqLpoae3Pb,Qmaz1R8vcv9v3gUfksqiS9JUz7K9G8S5By3JYn8kTiiP5K,QmNRkaVUwUQAwPwWgdQHYvw53A5gh3CP3giWnWQZdA2BTE,QmVUGoP6yjUxf5NnXtKxVQuuNh2dAxepuRiUuCQHQ9a3jy"
     networks:
       - monitor-net
     restart: unless-stopped
@@ -358,9 +358,10 @@ services:
 
 
   postgres:
-    image: postgres:13.1
+    image: postgres:13.3
+    shm_size: 32g
     container_name: postgres
-    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements"]
+    command: ["postgres", "-cshared_preload_libraries=pg_stat_statements", "-cshared_buffers=16384MB", "-cwork_mem=64MB", "-cmaintenance_work_mem=620MB", "-chuge_pages=on", "-ceffective_cache_size=45GB", "-crandom_page_cost=1.25", "-cmax_worker_processes=64", "-cmax_parallel_workers_per_gather=32", "-cmax_parallel_maintenance_workers=32", "-cmax_parallel_workers=64", "-cparallel_leader_participation=on", "-ccheckpoint_timeout=15min", "-ccheckpoint_completion_target=0.9", "-cmax_wal_size=10240MB", "-cmin_wal_size=5120MB", "-cwal_buffers=-1", "-cjit=on", "-cenable_partitionwise_join=on", "-cenable_partitionwise_aggregate=on", "-cmax_connections=100", "-ceffective_io_concurrency=100"]
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-graph-node}
@@ -368,6 +369,7 @@ services:
       POSTGRES_DB: ${GRAPH_NODE_DB_NAME:-graph-node}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - /dev/hugepages:/dev/hugepages
     networks:
       - monitor-net
     expose:
@@ -383,7 +385,7 @@ services:
 
 
   postgres2:
-    image: postgres:13.1
+    image: postgres:13.3
     container_name: postgres2
     command: ["postgres", "-cshared_preload_libraries=pg_stat_statements"]
     restart: unless-stopped
